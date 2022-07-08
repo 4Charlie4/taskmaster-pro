@@ -88,6 +88,7 @@ $(".list-group").on("blur", "textarea", function() {
 
   //replace textarea with p element
   $(this).replaceWith(taskP);
+
 });
 
 //due date was clicked
@@ -126,7 +127,7 @@ $(".list-group").on("blur", "input[type='text']", function() {
 
   //get the task's position in the list of other li elements
   var index = $(this)
-  .closest(".lst-group-item")
+  .closest(".list-group-item")
   .index();
   //update task in array and re-save to local storage
   tasks[status][index].date = date;
