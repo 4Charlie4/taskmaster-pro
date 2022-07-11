@@ -13,6 +13,9 @@ var createTask = function(taskText, taskDate, taskList) {
   // append span and p element to parent li
   taskLi.append(taskSpan, taskP);
 
+  //checks due date and passes taskLi as an argument into whenTask
+  whenTask(taskLi);
+
 
   // append to ul list on the page
   $("#list-" + taskList).append(taskLi);
@@ -108,12 +111,21 @@ $(".list-group").on("click", "span", function() {
     //swap out elements
   $(this).replaceWith(dateInput);
 
+  //Enable calender picker upon edit
+  dateInput.datepicker({
+    minDate: 1,
+    onClose: function() {
+      //allows calender to close 
+      $(this).trigger("change");
+    }
+  });
+
     //automatically focus on new element
   dateInput.trigger("focus");
   
 });
 
-$(".list-group").on("blur", "input[type='text']", function() {
+$(".list-group").on("change", "input[type='text']", function() {
   //get current text
   var date = $(this)
     .val()
@@ -140,6 +152,8 @@ $(".list-group").on("blur", "input[type='text']", function() {
 
   //replace input with span element
   $(this).replaceWith(taskSpan);
+
+  whenTask($(taskSpan).closest(".list-group-item"));
   
 
 });
@@ -212,10 +226,33 @@ $("#trash").droppable({
     console.log("out");
   },
 });
+//calender added to modal
+$("#modalDueDate").datepicker({
+  minDate: 1
+});
 
+var whenTask = function(taskEl) {
+  var date = $(taskEl)
+  .find("span")
+  .text()
+  .trim();
 
+  
 
+  //will convert to a moment object
+  var time = moment(date, "L").set("hour", 17);
 
+  $(taskEl).removeClass("list-group-item-warning list-group-item-danger")
+
+  if (moment().isAfter(time)) {
+    // bg color of task becomes red if due date is passed
+    $(taskEl).addClass("list-group-item-danger")
+    //bg color of task becomes yellow if it is within 2 days
+  } else if (Math.abs(moment().diff(time, "days")) <= 2) {
+    $(taskEl).addClass("list-group-item-warning");
+  }
+
+  }
 
 // modal was triggered
 $("#task-form-modal").on("show.bs.modal", function() {
